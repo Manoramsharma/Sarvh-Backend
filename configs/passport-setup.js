@@ -2,7 +2,9 @@ const passport = require("passport");
 const express = require("express");
 const app = express();
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
-
+const cors = require("cors");
+const User = require("../models/userModel");
+app.use(cors());
 // Implementing  google strategy for google authentication.
 // We need to provide client id, client secret given by google in google developer console.
 // Give a call back url so that it redirects to a page when user is logged in.
@@ -15,8 +17,6 @@ passport.use(
     },
     // function to get profile details and a call back function
     function (accessToken, refreshToken, profile, cb) {
-      console.log(accessToken);
-      console.log(refreshToken);
       return cb(null, profile);
     }
   )

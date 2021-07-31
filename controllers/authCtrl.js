@@ -1,6 +1,12 @@
 const Users = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const express = require("express");
+const cors = require("cors");
+const app = express();
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
 
 const authCtrl = {
   register: async (req, res) => {
@@ -14,8 +20,9 @@ const authCtrl = {
       }
       console.log(newUserName);
 
-      const user_name = await Users.findOne({username: newUserName})
-      if(user_name) return res.status(404).json({msg: "this user name already exists"})
+      const user_name = await Users.findOne({ username: newUserName });
+      if (user_name)
+        return res.status(404).json({ msg: "this user name already exists" });
 
       const user_email = await Users.findOne({ email });
 
@@ -76,14 +83,12 @@ const authCtrl = {
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
-
-      res.cookie("refreshtoken", refresh_token, {
-        httpOnly: true,
-        path: "/api/refresh_token",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      });
-
-      res.json({
+      res.status(200).cookie("refreshtoken", refresh_token, {
+        sameSite: "strict",
+        path: "/",
+        expires: new Date(new Date().getTime() + 100 * 1000),
+        httpOnly: false,
+      }).json({
         msg: "Login Sucess!",
         access_token,
         user: {
@@ -91,6 +96,12 @@ const authCtrl = {
           password: "",
         },
       });
+
+      // res.cookie("refreshtoken", refresh_token, {
+      //   httpOnly: true,
+      //   path: "/api/refresh_token",
+      //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      // });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
