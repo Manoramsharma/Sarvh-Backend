@@ -66,6 +66,8 @@ const authCtrl = {
     }
   },
   login: async (req, res) => {
+    console.log("in api/login");
+    console.log(req.body);
     try {
       const { email, password } = req.body;
 
@@ -83,19 +85,22 @@ const authCtrl = {
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
-      res.status(200).cookie("refreshtoken", refresh_token, {
-        sameSite: "strict",
-        path: "/",
-        expires: new Date(new Date().getTime() + 100 * 1000),
-        httpOnly: false,
-      }).json({
-        msg: "Login Sucess!",
-        access_token,
-        user: {
-          ...user._doc,
-          password: "",
-        },
-      });
+      res
+        .status(200)
+        .cookie("refreshtoken", refresh_token, {
+          sameSite: "strict",
+          path: "/",
+          expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+          httpOnly: false,
+        })
+        .json({
+          msg: "Login Sucess!",
+          access_token,
+          user: {
+            ...user._doc,
+            password: "",
+          },
+        });
 
       // res.cookie("refreshtoken", refresh_token, {
       //   httpOnly: true,
