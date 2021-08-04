@@ -19,7 +19,7 @@ app.use(cookieSession({
 app.use(
   cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "OPTIONS", "PUT"],
     credentials: true,
   })
 );
