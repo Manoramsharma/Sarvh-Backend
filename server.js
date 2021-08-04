@@ -5,6 +5,7 @@ const { request } = require("express");
 const express = require("express");
 const connectDB = require("./configs/db");
 const cookieSession = require("cookie-session");
+
 //connect db
 
 connectDB();
@@ -12,6 +13,7 @@ connectDB();
 //Routers
 
 const app = express();
+const categoryRoutes = require('./routes/category')
 app.use(cookieSession({
   maxAge: 24*60*60*1000,
   keys: process.env.COOKIE_KEY
@@ -19,7 +21,7 @@ app.use(cookieSession({
 app.use(
   cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "OPTIONS", "PUT"],
     credentials: true,
   })
 );
@@ -39,6 +41,7 @@ app.use(function (req, res, next) {
 });
 app.use("/api", require("./routes/authRouter"));
 app.use("/auth", require("./routes/auth"));
+app.use("/api", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.json({ msg: "sarvh server up" });
