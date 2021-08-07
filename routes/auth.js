@@ -27,55 +27,51 @@ function setCookie(req, res, next) {
   });
   next();
 }
-router.get(
-  "/google/redirect",
-  passport.authenticate("google", {
-    failureMessage: "Cannot login to Google, please try again later!",
-    failureRedirect: errorLoginUrl,
-    // successRedirect: successLoginUrl,
-  }),
-  (req, res) => {
-    const lastname = req.user.name.familyName;
-    const firstname = req.user.name.givenName;
-    const profilepic = req.user.photos[0].value;
-    const email = req.user.emails[0].value;
-    res
-      .status(200)
-      .cookie("access_token", " req.user.auth.token.kuchbhi", {
-        sameSite: "strict",
-        path: "/",
-        expires: new Date(new Date().getTime() +30 * 24 * 60 * 60 * 1000),
-        // expiresIn: "1d",
-        // maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: false,
-      })
-      .send("cookie being initialized");
-    console.log(lastname, firstname, profilepic, email);
-  }
-);
-// router.get("/google/redirect", (req, res) => {
-//   passport.authenticate(
-//     "google",
-//     { session: false, failureRedirect: "/auth/google/failure" },
-//     async (err, user) => {
-//       // You can send cookies and data in response here.
-//       console.log(user);
-//       res
-//         .status(200)
-//         .cookie("access_token", "some token", {
-//           sameSite: "none",
-//           path: "/",
-//           expires: new Date(new Date().getTime() + 99999 * 1000),
-//           secure: process.env.NODE_ENV !== "development",
-
-//           httpOnly: true,
-//         })
-//         .json({
-//           msg: "success"
-//         })
-//     }
-//   )(req, res);
-// });
+// router.get(
+//   "/google/redirect",
+//   passport.authenticate("google", {
+//     failureMessage: "Cannot login to Google, please try again later!",
+//     failureRedirect: errorLoginUrl,
+//     successRedirect: successLoginUrl,
+//   }),
+//   (req, res) => {
+//     const lastname = req.user.name.familyName;
+//     const firstname = req.user.name.givenName;
+//     const profilepic = req.user.photos[0].value;
+//     const email = req.user.emails[0].value;
+//     res
+//       .status(200)
+//       .cookie("access_token", " req.user.auth.token.kuchbhi", {
+//         sameSite: "strict",
+//         path: "/",
+//         expires: new Date(new Date().getTime() +30 * 24 * 60 * 60 * 1000),
+//         // expiresIn: "1d",
+//         // maxAge: 30 * 24 * 60 * 60 * 1000,
+//         httpOnly: false,
+//       })
+//       .send("cookie being initialized");
+//     console.log(lastname, firstname, profilepic, email);
+//   }
+// );
+router.get("/google/redirect", (req, res) => {
+  passport.authenticate(
+    "google",
+    { session: false, failureRedirect: "/auth/google/failure" },
+    async (err, user) => {
+      res
+        .status(200)
+        .cookie("refreshtoken", "refresh_token", {
+          path: "/api/refresh_token",
+          sameSite: "None",
+          expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+          secure: false,
+          httpOnly: process.env.NODE_ENV !== 'development',
+        })
+        .redirect("http://localhost:3000/login");
+      // You can send cookies and data in response here.
+    }
+  )(req, res);
+});
 router.get("/user", isUserAuthenticated, (req, res) => {
   console.log("asdkjf;askfdj");
   res.json(req.user);

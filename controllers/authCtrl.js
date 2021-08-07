@@ -68,7 +68,6 @@ const authCtrl = {
     }
   },
   login: async (req, res) => {
-    console.log(req.body);
     try {
       const { email, password } = req.body;
 
@@ -152,7 +151,6 @@ const authCtrl = {
   },
 
   forgotPassword: async (req, res) => {
-    console.log(req.body);
     // Send Email to email provided but first check if user exists
     const { email } = req.body;
 

@@ -40,6 +40,7 @@ app.use(function (req, res, next) {
   next();
 });
 app.use("/api", require("./routes/authRouter"));
+app.use("/api", require("./routes/user"));
 app.use("/auth", require("./routes/auth"));
 app.use("/api", categoryRoutes);
 
