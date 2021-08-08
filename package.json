@@ -19,6 +19,7 @@
   "homepage": "https://github.com/sohan2410/sarvh#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.26.3",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
@@ -32,5 +33,6 @@
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
     "slugify": "^1.6.0"
-  }
+  },
+  "proxy": "http://localhost:3000"
 }

@@ -39,8 +39,10 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.header("origin"));
   next();
 });
+app.use(express.urlencoded({limit: '50mb', extended: true}))
 app.use("/api", require("./routes/authRouter"));
 app.use("/api", require("./routes/user"));
+app.use("/api", require("./routes/post"));
 app.use("/auth", require("./routes/auth"));
 app.use("/api", categoryRoutes);
 
