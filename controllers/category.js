@@ -1,8 +1,6 @@
 const slugify = require("slugify");
 const Category = require("../models/category");
 
-
-
 function createCategories(categories, parentId = null) {
   const categoryList = [];
   let category;
@@ -11,16 +9,18 @@ function createCategories(categories, parentId = null) {
   } else {
     category = categories.filter((cat) => cat.parentId == parentId);
   }
-  for(let cate of category){
-      categoryList.push({
-          _id: cate._id,
-          name: cate.name,
-          slug: cate.slug,
-          childern: createCategories(categories, cate._id)
-      })
+  for (let cate of category) {
+    categoryList.push({
+      _id: cate._id,
+      name: cate.name,
+      slug: cate.slug,
+      parentId: cate.parentId,
+      type: cate.type,
+      children: createCategories(categories, cate._id),
+    });
   }
 
-  return categoryList
+  return categoryList;
 }
 
 exports.addCategory = (req, res) => {
