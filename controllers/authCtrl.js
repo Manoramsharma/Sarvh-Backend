@@ -7,7 +7,9 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
-
+const { google } = require("googleapis");
+const { OAuth2 } = google.auth;
+const client = new OAuth2(process.env.GOOGLE_CLIENT_ID);
 app.use(cookieParser());
 
 const authCtrl = {
@@ -111,6 +113,67 @@ const authCtrl = {
       return res.status(500).json({ msg: error.message });
     }
   },
+  googlelogin: async (req, res) => {
+    try {
+      const { tokenId } = req.body;
+      const verify = await client.verifyIdToken({
+        idToken: tokenId,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const { email, name, picture } = verify.payload;
+      const checkEmail = await Users.findOne({ email: email });
+      if (checkEmail) {
+        const refresh_token = createRefreshToken({ id: checkEmail._id });
+        const access_token = createAccessToken({ id: checkEmail._id });
+
+        res
+          .status(200)
+          .cookie("refreshtoken", refresh_token, {
+            path: "/api/refresh_token",
+            // sameSite: "strict",
+            expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+            httpOnly: false,
+          })
+          .json({
+            msg: "Login Sucess!",
+            access_token,
+            user: {
+              ...checkEmail._doc,
+              password: "",
+            },
+          });
+      } else {
+        
+        const newUser = new Users({
+          email: email,
+          fullname: name,
+          avatar: picture,
+        });
+        newUser.save();
+        const refresh_token = createRefreshToken({ id: newUser._id });
+        const access_token = createAccessToken({ id: newUser._id });
+        res
+          .status(200)
+          .cookie("refreshtoken", refresh_token, {
+            path: "/api/refresh_token",
+            sameSite: "strict",
+            expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+            httpOnly: false,
+          })
+          .json({
+            msg: "Login Sucess!",
+            access_token,
+            user: {
+              ...newUser._doc,
+              password: "",
+            },
+          });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: error.message });
+    }
+  },
   logout: async (req, res) => {
     try {
       res.clearCookie("refreshtoken", { path: "/api/refresh_token" });
@@ -201,7 +264,7 @@ const authCtrl = {
 
   // @desc    Reset User Password
   resetPassword: async (req, res, next) => {
-    console.log(req.body)
+    console.log(req.body);
     // Compare token in URL params to hashed token
     const resetPasswordToken = crypto
       .createHash("sha256")
