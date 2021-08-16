@@ -143,7 +143,6 @@ const authCtrl = {
             },
           });
       } else {
-        
         const newUser = new Users({
           email: email,
           fullname: name,
@@ -173,6 +172,57 @@ const authCtrl = {
       console.log(error);
       return res.status(500).json({ msg: error.message });
     }
+  },
+  facebooklogin: async (req, res) => {
+    const { name, email, picture } = req.body;
+    const url  = picture.data.url;
+    const checkEmail = await Users.findOne({ email: email });
+      if (checkEmail) {
+        const refresh_token = createRefreshToken({ id: checkEmail._id });
+        const access_token = createAccessToken({ id: checkEmail._id });
+
+        res
+          .status(200)
+          .cookie("refreshtoken", refresh_token, {
+            path: "/api/refresh_token",
+            // sameSite: "strict",
+            expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+            httpOnly: false,
+          })
+          .json({
+            msg: "Login Sucess!",
+            access_token,
+            user: {
+              ...checkEmail._doc,
+              password: "",
+            },
+          });
+      } else {
+        const newUser = new Users({
+          email: email,
+          fullname: name,
+          avatar: url,
+        });
+        newUser.save();
+        const refresh_token = createRefreshToken({ id: newUser._id });
+        const access_token = createAccessToken({ id: newUser._id });
+        res
+          .status(200)
+          .cookie("refreshtoken", refresh_token, {
+            path: "/api/refresh_token",
+            sameSite: "strict",
+            expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+            httpOnly: false,
+          })
+          .json({
+            msg: "Login Sucess!",
+            access_token,
+            user: {
+              ...newUser._doc,
+              password: "",
+            },
+          });
+      }
   },
   logout: async (req, res) => {
     try {
