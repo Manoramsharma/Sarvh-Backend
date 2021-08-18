@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const Product = require("../models/product");
+const Comments = require("../models/comment");
 const Users = require("../models/userModel");
 const { cloudinary } = require("../configs/cloudinary");
 app.use(express.json());
@@ -39,9 +40,46 @@ exports.uploadFile = async (req, res) => {
     category,
     subCategory,
     images: links,
-    owner: req.user._id,
+    user: req.user._id,
   });
   newProduct.save();
-  res.status(200).json({ msg: "Product Uploaded!" });
+  res.status(200).json({
+    msg: "Product Uploaded!",
+    newProduct: { ...newProduct._doc, user: req.user },
+  });
   // console.log(newProduct);
+};
+
+exports.getProducts = async (req, res) => {
+  try {
+    const product = await Product.find()
+      .sort("-createdAt")
+      .populate("user likes", "avatar username fullname followers")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user likes",
+          select: "-password",
+        },
+      });
+    res.status(200).json({ msg: "product fetched", product: product });
+  } catch (err) {
+    console.log(err);
+    res.json({ msg: err });
+  }
+};
+exports.getProfileProduct = async (req, res) => {
+  try {
+    console.log(req.params.id);
+    console.log(req.query);
+    const user = await Users.findOne({ username: req.params.id });
+    const product = await Product.find({ user: user._id })
+      .sort("-createdAt")
+      .populate("user", "username");
+    console.log(product);
+    res.status(200).json({ msg: "product fetched", product: product });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: err });
+  }
 };
