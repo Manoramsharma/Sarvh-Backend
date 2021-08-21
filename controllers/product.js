@@ -61,7 +61,7 @@ exports.getProducts = async (req, res) => {
           path: "user likes",
           select: "-password",
         },
-      });
+      }).limit(5)
     res.status(200).json({ msg: "product fetched", product: product });
   } catch (err) {
     console.log(err);
