@@ -6,10 +6,11 @@ const {
   getuser,
   follow,
   unfollow,
+  userproduct,
 } = require("../controllers/user");
 const auth = require("../middlewares/auth");
 router.get("/search", searchuser);
-router.get("/user/:id", auth, getuser);
+router.get("/user/:id", getuser);
 router.patch("/user/:id/follow", auth, follow);
 router.patch("/user/:id/unfollow", auth, unfollow);
 module.exports = router;
