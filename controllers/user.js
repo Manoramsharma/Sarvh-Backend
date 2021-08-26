@@ -15,7 +15,6 @@ exports.searchuser = async (req, res) => {
   }
 };
 exports.getuser = async (req, res) => {
-  console.log(req.params.id);
   try {
     const user = await Users.find({ username: req.params.id })
       .select("-password -resetPasswordExpire -resetPasswordToken")
@@ -30,7 +29,8 @@ exports.getuser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const {  avatar, fullname, mobile, address, story, website, gender } = req.body;
+    const { avatar, fullname, mobile, address, story, website, gender } =
+      req.body;
     if (!fullname)
       return res.status(400).json({ msg: "Please add your full name." });
 
@@ -39,12 +39,13 @@ exports.updateUser = async (req, res) => {
       {
         $set: {
           fullname: fullname,
-          avatar : avatar ,
-          gender : gender ,
-          mobile : mobile ,
-          address : address ,
-          story : story ,
-        website : website         },
+          avatar: avatar,
+          gender: gender,
+          mobile: mobile,
+          address: address,
+          story: story,
+          website: website,
+        },
       },
       {
         upsert: true,

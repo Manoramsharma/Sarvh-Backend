@@ -7,7 +7,6 @@ const { cloudinary } = require("../configs/cloudinary");
 app.use(express.json());
 
 exports.uploadFile = async (req, res) => {
-  console.log("in upload file");
   const {
     productName,
     price,
@@ -17,8 +16,6 @@ exports.uploadFile = async (req, res) => {
     category,
     subCategory,
   } = req.body;
-  console.log(req.body.file.length);
-  console.log(req.user);
   const links = [];
   for (var i = 0; i < req.body.file.length; i++) {
     try {
@@ -47,7 +44,6 @@ exports.uploadFile = async (req, res) => {
     msg: "Product Uploaded!",
     newProduct: { ...newProduct._doc, user: req.user },
   });
-  // console.log(newProduct);
 };
 
 exports.getProducts = async (req, res) => {
@@ -61,7 +57,8 @@ exports.getProducts = async (req, res) => {
           path: "user likes",
           select: "-password",
         },
-      }).limit(5)
+      })
+      .limit(5);
     res.status(200).json({ msg: "product fetched", product: product });
   } catch (err) {
     console.log(err);
@@ -70,16 +67,25 @@ exports.getProducts = async (req, res) => {
 };
 exports.getProfileProduct = async (req, res) => {
   try {
-    console.log(req.params.id);
-    console.log(req.query);
     const user = await Users.findOne({ username: req.params.id });
     const product = await Product.find({ user: user._id })
       .sort("-createdAt")
       .populate("user", "username");
-    console.log(product);
     res.status(200).json({ msg: "product fetched", product: product });
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: err });
+  }
+};
+exports.getAllProducts = async (req, res) => {
+  try {
+    const result = await Product.find({})
+      .populate("user", "username")
+      .sort("-createdAt");
+
+    res.status(200).json({ result: result });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error });
   }
 };
