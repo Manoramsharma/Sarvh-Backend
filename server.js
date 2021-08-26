@@ -15,6 +15,7 @@ connectDB();
 
 const app = express();
 const categoryRoutes = require("./routes/category");
+const cartRoutes = require("./routes/cart")
 app.use(
   cookieSession({
     maxAge: 24 * 60 * 60 * 1000,
@@ -49,7 +50,7 @@ app.use("/api", require("./routes/user"));
 app.use("/api", require("./routes/product"));
 app.use("/auth", require("./routes/auth"));
 app.use("/api", categoryRoutes);
-
+app.use("/api", cartRoutes);
 app.get("/", (req, res) => {
   res.json({ msg: "sarvh server up" });
 });

@@ -30,7 +30,7 @@ exports.getuser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { fullname } = req.body;
+    const {  avatar, fullname, mobile, address, story, website, gender } = req.body;
     if (!fullname)
       return res.status(400).json({ msg: "Please add your full name." });
 
@@ -39,7 +39,12 @@ exports.updateUser = async (req, res) => {
       {
         $set: {
           fullname: fullname,
-        },
+          avatar : avatar ,
+          gender : gender ,
+          mobile : mobile ,
+          address : address ,
+          story : story ,
+        website : website         },
       },
       {
         upsert: true,
