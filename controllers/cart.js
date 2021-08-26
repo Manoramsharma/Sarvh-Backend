@@ -12,17 +12,17 @@ exports.addItemToCart = (req ,res) => {
 
                 Cart.findOneAndUpdate({ "user": req.user._id , "cartItems.product" : product } , {
                     "$set": {
-                        "cartItems" : {
+                        "cartItems.$" : {
                             ...req.body.cartItems,
                         quantity : item.quantity + req.body.cartItems.quantity   }
                     }
                 })
-                .exec((error , _cart) =>{
+              .exec((error , _cart) =>{
                     if(error) return res.status(400).json({error});
                     if(_cart){
                         return res.status(200).json({cart : _cart});
                     }
-                })
+                }) 
             }else{
 
                 Cart.findOneAndUpdate({ user: req.user._id} , {
