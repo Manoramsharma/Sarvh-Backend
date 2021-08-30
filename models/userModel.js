@@ -40,6 +40,12 @@ const userSchema = new mongoose.Schema(
     address: { type: String, default: "" },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    cart: [
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
+        quantity: { type: Number, default: 1 },
+      },
+    ],
 
     isAdmin: { type: Boolean, required: true, default: false },
     isSeller: { type: Boolean, required: true, default: false },
