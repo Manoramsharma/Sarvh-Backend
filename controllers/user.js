@@ -28,6 +28,7 @@ exports.getuser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
+  console.log(req.body);
   try {
     const { avatar, fullname, mobile, address, story, website, gender } =
       req.body;
