@@ -15,7 +15,7 @@ connectDB();
 
 const app = express();
 const categoryRoutes = require("./routes/category");
-const cartRoutes = require("./routes/cart")
+const cartRoutes = require("./routes/cart");
 app.use(
   cookieSession({
     maxAge: 24 * 60 * 60 * 1000,
@@ -25,7 +25,7 @@ app.use(
 app.use(
   cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST", "OPTIONS", "PUT"],
+    methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH"],
     credentials: true,
   })
 );

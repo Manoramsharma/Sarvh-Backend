@@ -89,3 +89,14 @@ exports.getAllProducts = async (req, res) => {
     res.status(500).json({ error: error });
   }
 };
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.find({ _id: req.params.id }).populate(
+      "user",
+      "username avatar fullname"
+    );
+    res.json({ product });
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -1,11 +1,11 @@
 const express = require("express");
-const {
-    addItemToCart
-} = require("../controllers/cart");
+const { addItemToCart, addToCart } = require("../controllers/cart");
 const auth = require("../middlewares/auth");
 
 const router = express.Router();
 router.post("/cart/addtocart", auth, addItemToCart);
+router.post("/cart/update/:id/:quantity", auth, addToCart);
+
 /* router.get("/product", getProducts);
 router.get("/product/:id", auth, getProfileProduct); */
 

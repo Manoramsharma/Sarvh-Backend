@@ -18,7 +18,7 @@ exports.getuser = async (req, res) => {
   try {
     const user = await Users.find({ username: req.params.id })
       .select("-password -resetPasswordExpire -resetPasswordToken")
-      .populate("followers following", "-password");
+      .populate("cart.product");
     if (!user) return res.status(400).json({ msg: "User does not exist." });
 
     res.json({ user: user[0] });
@@ -28,6 +28,7 @@ exports.getuser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
+  console.log(req.body);
   try {
     const { avatar, fullname, mobile, address, story, website, gender } =
       req.body;
