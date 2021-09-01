@@ -30,7 +30,7 @@ exports.getuser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   console.log(req.body);
   try {
-    const { avatar, fullname, mobile, address, story, website, gender } =
+    const { avatar, fullname, mobile, address, story, website, gender , bio , pincode } =
       req.body;
     if (!fullname)
       return res.status(400).json({ msg: "Please add your full name." });
@@ -46,6 +46,8 @@ exports.updateUser = async (req, res) => {
           address: address,
           story: story,
           website: website,
+          bio : bio ,
+          pincode : pincode
         },
       },
       {
