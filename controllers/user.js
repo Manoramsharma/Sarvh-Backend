@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 const Users = require("../models/userModel");
+const { cloudinary } = require("../configs/cloudinary");
 
 exports.searchuser = async (req, res) => {
   try {
@@ -28,36 +29,61 @@ exports.getuser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
-    const { avatar, fullname, mobile, address, story, website, gender , bio , pincode } =
+    var { fullname, username, mobile, address, gender, bio, pincode, file } =
       req.body;
-    if (!fullname)
-      return res.status(400).json({ msg: "Please add your full name." });
-
-    await Users.findOneAndUpdate(
-      { _id: req.user._id },
-      {
-        $set: {
-          fullname: fullname,
-          avatar: avatar,
-          gender: gender,
-          mobile: mobile,
-          address: address,
-          story: story,
-          website: website,
-          bio : bio ,
-          pincode : pincode
+    if (file) {
+      console.log("file selected");
+      const fileStr = req.body.file;
+      const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+        upload_preset: "ml_default",
+      });
+      file = uploadResponse.secure_url;
+      await Users.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          $set: {
+            fullname: fullname,
+            username: username,
+            mobile: mobile,
+            address: address,
+            gender: gender,
+            bio: bio,
+            pincode: pincode,
+            avatar: file,
+          },
         },
-      },
-      {
-        upsert: true,
-        new: true,
-      }
-    );
-
-    res.json({ msg: "Update Success!" });
+        {
+          upsert: true,
+          new: true,
+        }
+      );
+      res.json({ msg: "Update Success!" });
+    } else {
+      console.log("file not selected");
+      await Users.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          $set: {
+            fullname: fullname,
+            username: username,
+            mobile: mobile,
+            address: address,
+            gender: gender,
+            bio: bio,
+            pincode: pincode,
+          },
+        },
+        {
+          upsert: true,
+          new: true,
+        }
+      );
+      res.json({ msg: "Update Success!" });
+    }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ msg: err });
   }
 };
