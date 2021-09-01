@@ -38,6 +38,8 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, default: "male" },
     mobile: { type: String, default: "" },
     address: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    pincode: { type: String, default: "" },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     cart: [
