@@ -29,12 +29,10 @@ exports.getuser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  // console.log(req.body);
   try {
     var { fullname, username, mobile, address, gender, bio, pincode, file } =
       req.body;
     if (file) {
-      console.log("file selected");
       const fileStr = req.body.file;
       const uploadResponse = await cloudinary.uploader.upload(fileStr, {
         upload_preset: "ml_default",
@@ -61,7 +59,6 @@ exports.updateUser = async (req, res) => {
       );
       res.json({ msg: "Update Success!" });
     } else {
-      console.log("file not selected");
       await Users.findOneAndUpdate(
         { _id: req.user._id },
         {

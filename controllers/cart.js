@@ -66,35 +66,60 @@ exports.addToCart = async (req, res) => {
     if (findCart.length > 0) {
       //already in the cart
       // we can update quantity
-      const data = await Users.update(
+      if (req.params.quantity === "0") {
+        console.log("in 0 quantity");
+        //remove product from cart
+
+        const data = await Users.update(
+          {
+            _id: req.user._id,
+            "cart.product": req.params.id,
+          },
+          {
+            $pull: {
+              cart: {
+                product: req.params.id,
+              },
+            },
+          },
+          { new: true }
+        );
+        return res.status(200).json({ msg: "cart item deleted successfully" });
+      } else {
+        //update quantity in cart
+        await Users.update(
+          {
+            _id: req.user._id,
+            "cart.product": req.params.id,
+          },
+          {
+            $set: {
+              "cart.$.quantity": req.params.quantity,
+            },
+          }
+        );
+        return res.status(200).json({ msg: "cart updated successfull" });
+      }
+    }
+    if (req.params.quantity === "0") {
+      res.status(400).json({ msg: "quantity must be greater than 0" });
+    } else {
+      const data = await Users.findOneAndUpdate(
         {
           _id: req.user._id,
-          "cart.product": req.params.id,
         },
         {
-          $set: {
-            "cart.$.quantity": req.params.quantity,
-          },
-        }
-      ).populate("cart");
-      return res.status(200).json({ msg: "cart updated successfull" });
-    }
-
-    const data = await Users.findOneAndUpdate(
-      {
-        _id: req.user._id,
-      },
-      {
-        $push: {
-          cart: {
-            product: req.params.id,
-            quantity: req.params.quantity,
+          $push: {
+            cart: {
+              product: req.params.id,
+              quantity: req.params.quantity,
+            },
           },
         },
-      },
-      { upsert: true, new: true }
-    ).populate("cart");
-    res.send(data);
+        { upsert: true, new: true }
+      ).populate("cart");
+      res.send(data);
+    }
   } catch (error) {
     console.log(error);
     res.send({ msg: error.message });
