@@ -95,6 +95,7 @@ exports.addToCart = async (req, res) => {
           {
             $set: {
               "cart.$.quantity": req.params.quantity,
+              "cart.$.size": req.params.size,
             },
           }
         );
@@ -113,12 +114,13 @@ exports.addToCart = async (req, res) => {
             cart: {
               product: req.params.id,
               quantity: req.params.quantity,
+              size: req.params.size,
             },
           },
         },
         { upsert: true, new: true }
-      ).populate("cart");
-      res.send(data);
+      ).populate("cart.product");
+      res.send(data.cart);
     }
   } catch (error) {
     console.log(error);
