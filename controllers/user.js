@@ -140,19 +140,48 @@ exports.unfollow = async (req, res) => {
 };
 
 exports.rating = async (req, res) => {
-  const data = await Users.findOneAndUpdate(
-    {
+  try {
+    const user = await Users.find({
       _id: req.params.id,
-    },
-    {
-      $push: {
-        rating: {
-          user: req.user._id,
-          rated: req.params.rate,
+      rating: req.user._id,
+    });
+    if (user.length > 0) {
+      await Users.update(
+        {
+          _id: req.user._id,
+          "rating.user": req.params.id,
+        },
+        {
+          $set: {
+            "rating.$.rated": req.params.rated,
+          },
+        }
+      );
+      return res.status(200).json({ msg: "rating updated successfull" });
+    }
+    const data = await Users.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $push: {
+          rating: {
+            user: req.user._id,
+            rated: req.params.rate,
+          },
         },
       },
-    },
-    { upsert: true, new: true }
-  ).populate("rating.user");
-  res.send(data);
+      { upsert: true, new: true }
+    ).populate("rating.user");
+    res.send(data);
+
+    /* 
+      else {
+        return res.status(500).json({ msg: "You already rated this user." });
+        
+     
+    } */
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
 };
