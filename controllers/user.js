@@ -138,3 +138,21 @@ exports.unfollow = async (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
+
+exports.rating = async (req, res) => {
+  const data = await Users.findOneAndUpdate(
+    {
+      _id: req.params.id,
+    },
+    {
+      $push: {
+        rating: {
+          user: req.user._id,
+          rated: req.params.rate,
+        },
+      },
+    },
+    { upsert: true, new: true }
+  ).populate("rating.user");
+  res.send(data);
+};

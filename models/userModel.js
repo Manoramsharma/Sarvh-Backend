@@ -49,7 +49,12 @@ const userSchema = new mongoose.Schema(
         size: { type: String, default: "" },
       },
     ],
-
+    rating: [
+      {
+        user: { type: mongoose.Types.ObjectId, ref: "user" },
+        rated: { type: Number, default: 0 },
+      },
+    ],
     isAdmin: { type: Boolean, required: true, default: false },
     isSeller: { type: Boolean, required: true, default: false },
     seller: {
