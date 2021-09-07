@@ -143,28 +143,44 @@ exports.rating = async (req, res) => {
   try {
     const user = await Users.find({
       _id: req.params.id,
-      ratings: req.user.ratings,
+      rating: req.user._id,
     });
-    if (user.length > 0)
-      return res.status(500).json({ msg: "You rated this user." });
-
-    const newUser = await Users.findOneAndUpdate(
-      { _id: req.params.id },
+    if (user.length > 0) {
+      await Users.update(
+        {
+          _id: req.user._id,
+          "rating.user": req.params.id,
+        },
+        {
+          $set: {
+            "rating.$.rated": req.params.rated,
+          },
+        }
+      );
+      return res.status(200).json({ msg: "rating updated successfull" });
+    }
+    const data = await Users.findOneAndUpdate(
       {
-        $push: { ratings: req.user.ratings },
+        _id: req.params.id,
       },
-      { new: true }
-    ).populate("followers following", "-password");
-
-    await Users.findOneAndUpdate(
-      { _id: req.user._id },
       {
-        $push: { ratings: req.params.id },
+        $push: {
+          rating: {
+            user: req.user._id,
+            rated: req.params.rate,
+          },
+        },
       },
-      { new: true }
-    );
+      { upsert: true, new: true }
+    ).populate("rating.user");
+    res.send(data);
 
-    res.json({ newUser });
+    /* 
+      else {
+        return res.status(500).json({ msg: "You already rated this user." });
+        
+     
+    } */
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
