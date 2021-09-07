@@ -93,7 +93,7 @@ const authCtrl = {
           path: "/api/refresh_token",
           sameSite: "strict",
           expires: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
-          httpOnly: false,
+          httpOnly: true,
         })
         .json({
           msg: "Login Sucess!",
