@@ -24,7 +24,10 @@ app.use(
 );
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : process.env.FRONTEND,
     methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH"],
     credentials: true,
   })
