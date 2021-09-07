@@ -138,3 +138,34 @@ exports.unfollow = async (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
+
+exports.rating = async (req, res) => {
+  try {
+    const user = await Users.find({
+      _id: req.params.id,
+      ratings: req.user.ratings,
+    });
+    if (user.length > 0)
+      return res.status(500).json({ msg: "You rated this user." });
+
+    const newUser = await Users.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $push: { ratings: req.user.ratings },
+      },
+      { new: true }
+    ).populate("followers following", "-password");
+
+    await Users.findOneAndUpdate(
+      { _id: req.user._id },
+      {
+        $push: { ratings: req.params.id },
+      },
+      { new: true }
+    );
+
+    res.json({ newUser });
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
