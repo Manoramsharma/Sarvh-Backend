@@ -143,17 +143,17 @@ exports.rating = async (req, res) => {
   try {
     const user = await Users.find({
       _id: req.params.id,
-      rating: req.user._id,
+      "rating.user": req.user._id,
     });
     if (user.length > 0) {
       await Users.update(
         {
-          _id: req.user._id,
-          "rating.user": req.params.id,
+          _id: req.params.id,
+          "rating.user": req.user._id,
         },
         {
           $set: {
-            "rating.$.rated": req.params.rated,
+            "rating.$.rated": req.params.rate,
           },
         }
       );
@@ -174,13 +174,6 @@ exports.rating = async (req, res) => {
       { upsert: true, new: true }
     ).populate("rating.user");
     res.send(data);
-
-    /* 
-      else {
-        return res.status(500).json({ msg: "You already rated this user." });
-        
-     
-    } */
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
