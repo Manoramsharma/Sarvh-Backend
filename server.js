@@ -54,8 +54,11 @@ app.use("/api", require("./routes/product"));
 app.use("/auth", require("./routes/auth"));
 app.use("/api", categoryRoutes);
 app.use("/api", cartRoutes);
-app.get("/", (req, res) => {
-  res.json({ msg: "sarvh server up" });
+
+const path = require("path");
+app.use(express.static(path.join(__dirname, "build")));
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 const PORT = process.env.PORT || 8000;
