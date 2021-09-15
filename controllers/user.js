@@ -32,6 +32,14 @@ exports.updateUser = async (req, res) => {
   try {
     var { fullname, username, mobile, address, gender, bio, pincode, file } =
       req.body;
+
+    if (username !== req.user.username) {
+      const user_name = await Users.findOne({ username: username });
+      if (user_name) {
+        return res.status(500).json({ msg: "This user name already exists." });
+      }
+    }
+
     if (file) {
       const fileStr = req.body.file;
       const uploadResponse = await cloudinary.uploader.upload(fileStr, {
