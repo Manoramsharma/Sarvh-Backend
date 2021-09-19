@@ -7,43 +7,49 @@ const { cloudinary } = require("../configs/cloudinary");
 app.use(express.json());
 
 exports.uploadFile = async (req, res) => {
-  const {
-    productName,
-    price,
-    mrp,
-    productDescription,
-    productFeatures,
-    category,
-    subCategory,
-  } = req.body;
-  const links = [];
-  for (var i = 0; i < req.body.file.length; i++) {
-    try {
-      const fileStr = req.body.file[i];
-      const uploadResponse = await cloudinary.uploader.upload(fileStr, {
-        upload_preset: "ml_default",
-      });
-      links.push(uploadResponse.secure_url);
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
+  if (!req.user.isSeller) {
+    res
+      .status(400)
+      .json({ msg: "Unauthorized access. Please contact admin! " });
+  } else {
+    const {
+      productName,
+      price,
+      mrp,
+      productDescription,
+      productFeatures,
+      category,
+      subCategory,
+    } = req.body;
+    const links = [];
+    for (var i = 0; i < req.body.file.length; i++) {
+      try {
+        const fileStr = req.body.file[i];
+        const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+          upload_preset: "ml_default",
+        });
+        links.push(uploadResponse.secure_url);
+      } catch (err) {
+        return res.status(500).json({ msg: err.message });
+      }
     }
+    const newProduct = new Product({
+      productName,
+      price,
+      mrp,
+      productDescription,
+      productFeatures,
+      category,
+      subCategory,
+      images: links,
+      user: req.user._id,
+    });
+    newProduct.save();
+    res.status(200).json({
+      msg: "Product Uploaded!",
+      newProduct: { ...newProduct._doc, user: req.user },
+    });
   }
-  const newProduct = new Product({
-    productName,
-    price,
-    mrp,
-    productDescription,
-    productFeatures,
-    category,
-    subCategory,
-    images: links,
-    user: req.user._id,
-  });
-  newProduct.save();
-  res.status(200).json({
-    msg: "Product Uploaded!",
-    newProduct: { ...newProduct._doc, user: req.user },
-  });
 };
 
 exports.getProducts = async (req, res) => {

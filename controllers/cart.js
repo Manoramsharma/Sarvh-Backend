@@ -87,7 +87,8 @@ exports.addToCart = async (req, res) => {
         return res.status(200).json({ msg: "cart item deleted successfully" });
       } else {
         //update quantity in cart
-        await Users.update(
+        console.log("in update quantity");
+        const data = await Users.update(
           {
             _id: req.user._id,
             "cart.product": req.params.id,
@@ -98,12 +99,15 @@ exports.addToCart = async (req, res) => {
               "cart.$.size": req.params.size,
             },
           }
+        ).populate("cart.product");
+        const result = await Users.findOne({ _id: req.user._id }).populate(
+          "cart.product"
         );
-        return res.status(200).json({ msg: "cart updated successfull" });
+        return res.status(200).send(result.cart);
       }
     }
     if (req.params.quantity === "0") {
-      res.status(400).json({ msg: "quantity must be greater than 0" });
+      res.status(400).send(data.cart);
     } else {
       const data = await Users.findOneAndUpdate(
         {

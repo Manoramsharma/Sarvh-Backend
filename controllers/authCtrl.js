@@ -276,10 +276,7 @@ const authCtrl = {
 
           const user = await Users.findById(result.id)
             .select("-password")
-            .populate(
-              "followers following cart.product",
-              "avatar fullname username"
-            );
+            .populate("followers following cart.product");
 
           if (!user)
             return res.status(400).json({ msg: "This does not exists." });
