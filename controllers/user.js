@@ -112,7 +112,10 @@ exports.follow = async (req, res) => {
     await Users.findOneAndUpdate(
       { _id: req.user._id },
       {
-        $push: { following: req.params.id },
+        $push: {
+          following: req.params.id,
+          notifications: `you got followed by ${req.user.username}`,
+        },
       },
       { new: true }
     );
@@ -182,6 +185,23 @@ exports.rating = async (req, res) => {
       { upsert: true, new: true }
     ).populate("rating.user");
     res.send(data);
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
+
+exports.pop_notifications = async (req, res) => {
+  try {
+    const user = await Users.find({
+      _id: req.params.id,
+    });
+    if (user.length > 0) {
+      let notifications = user.notifications;
+      let blank = [];
+      user.notifications = blank;
+      user.save();
+      res.json(notifications);
+    }
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }

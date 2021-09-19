@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
     pincode: { type: String, default: "" },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    notifications: [{ type: String, default: "" }],
     cart: [
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
