@@ -106,3 +106,11 @@ exports.getProductById = async (req, res) => {
     console.log(error);
   }
 };
+exports.deleteProduct = async (req, res) => {
+  await Product.deleteOne({ _id: req.params.id }, function (err, obj) {
+    if (err) {
+      res.status(500).json({ msg: "database error occured" });
+    }
+    res.status(200).json({ msg: "product deleted successfully" });
+  });
+};

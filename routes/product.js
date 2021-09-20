@@ -5,6 +5,7 @@ const {
   getProfileProduct,
   getAllProducts,
   getProductById,
+  deleteProduct,
 } = require("../controllers/product");
 const auth = require("../middlewares/auth");
 
@@ -14,4 +15,5 @@ router.get("/product", getProducts);
 router.get("/product/:id", getProfileProduct);
 router.get("/allproducts", getAllProducts);
 router.get("/byproductid/:id", getProductById);
+router.delete("/deleteproduct/:id", auth, deleteProduct);
 module.exports = router;
