@@ -104,7 +104,11 @@ exports.follow = async (req, res) => {
     const newUser = await Users.findOneAndUpdate(
       { _id: req.params.id },
       {
-        $push: { followers: req.user._id },
+        $push: {
+          followers: req.user._id,
+
+          notifications: `you got followed by ${req.user.username}`,
+        },
       },
       { new: true }
     ).populate("followers following", "-password");
@@ -114,7 +118,6 @@ exports.follow = async (req, res) => {
       {
         $push: {
           following: req.params.id,
-          notifications: `you got followed by ${req.user.username}`,
         },
       },
       { new: true }

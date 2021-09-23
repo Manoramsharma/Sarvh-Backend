@@ -18,5 +18,5 @@ router.patch("/user", auth, updateUser);
 router.patch("/user/:id/follow", auth, follow);
 router.patch("/user/:id/unfollow", auth, unfollow);
 router.post("/user/rating/:id/:rate", auth, rating);
-router.post("/notifications", auth, pop_notifications);
+router.post("/user/notifications/:id", auth, pop_notifications);
 module.exports = router;
