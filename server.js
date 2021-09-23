@@ -28,7 +28,7 @@ app.use(
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
         : process.env.FRONTEND,
-    methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH"],
+    methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
